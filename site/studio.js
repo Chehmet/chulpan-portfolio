@@ -6,7 +6,7 @@ const tLabels = {
   skip: ['Not applicable / not selected', 'Не применимо / не выбрано'],
 };
 
-export function setupStudio({ root, tr, pick, esc, links, visaGroups, statuses, api, articleCard, url }) {
+export function setupStudio({ root, tr, pick, esc, links, visaGroups, statuses, api, articleCard, url, pages, backup }) {
   const tab = new URLSearchParams(location.search).get('tab') === 'visa' ? 'visa' : 'writing';
   const studioPath = url('/studio/');
   const visaPath = `${studioPath}${studioPath.includes('?') ? '&' : '?'}tab=visa`;
@@ -22,6 +22,8 @@ export function setupStudio({ root, tr, pick, esc, links, visaGroups, statuses, 
   const saveError = tr('Could not save. Your edits are still in the form.', 'Не удалось сохранить. Введённые данные остались в форме.');
 
   async function start() {
+    if (pages === 'portfolio') return editor(root);
+    if (pages === 'visa') return checklist(root);
     const session = await api('session');
     if (!session.owner) {
       root.innerHTML = `<div class="notice"><h2>${tr('Owner sign-in', 'Вход для владельца')}</h2><p>${tr('The editor and checklist are available from the site owner’s ChatGPT account.', 'Редактор и чеклист доступны из аккаунта ChatGPT владельца сайта.')}</p>${session.signedIn ? '' : `<a class="button dark" href="${signIn}" target="_top">${tr('Sign in with ChatGPT', 'Войти через ChatGPT')}</a>`}</div>`;
@@ -39,7 +41,8 @@ export function setupStudio({ root, tr, pick, esc, links, visaGroups, statuses, 
     let dirty = false;
     const titleFor = item => tr(item.enTitle || item.ruTitle, item.ruTitle || item.enTitle);
 
-    panel.innerHTML = `<div class="studio-head"><div><h2>${tr('Publication editor', 'Редактор публикаций')}</h2><p>${tr('Save a private draft, or share the text as a preprint, working paper or publication. To add a PDF, link to a copy you have permission to share.', 'Сохраните личный черновик или разместите текст как препринт, рабочую статью или публикацию. Для PDF добавьте ссылку на копию, которой можно делиться.')}</p></div><button type="button" class="button dark" id="add-article">${tr('New article', 'Новая статья')}</button></div><div class="editor"><div class="editor-list" id="editor-list"></div><div id="editor-form"></div></div>`;
+    const exportPanel = pages === 'portfolio' ? `<div class="panel editor-export"><p>${tr('Drafts and edits are saved in this browser. To update the public site, download publications-data.json and replace the file of the same name at the root of your GitHub Pages repository. The download includes only entries marked Preprint, Working paper or Published.', 'Черновики и правки сохраняются в этом браузере. Чтобы обновить сайт, скачайте publications-data.json и замените одноимённый файл в корне репозитория GitHub Pages. В выгрузку попадут записи со статусом «Препринт», «Рабочая статья» или «Опубликовано».')}</p><div class="studio-actions"><button class="button dark" type="button" id="export-publications">${tr('Download publications-data.json', 'Скачать publications-data.json')}</button><span class="save-status" id="export-status" role="status"></span></div></div>` : '';
+    panel.innerHTML = `${exportPanel}<div class="studio-head"><div><h2>${pages ? tr('Your articles', 'Ваши статьи') : tr('Publication editor', 'Редактор публикаций')}</h2><p>${tr('Save a private draft, or share the text as a preprint, working paper or publication. To add a PDF, link to a copy you have permission to share.', 'Сохраните личный черновик или разместите текст как препринт, рабочую статью или публикацию. Для PDF добавьте ссылку на копию, которой можно делиться.')}</p></div><button type="button" class="button dark" id="add-article">${tr('New article', 'Новая статья')}</button></div><div class="editor"><div class="editor-list" id="editor-list"></div><div id="editor-form"></div></div>`;
     const list = panel.querySelector('#editor-list');
     const container = panel.querySelector('#editor-form');
 
@@ -80,7 +83,7 @@ export function setupStudio({ root, tr, pick, esc, links, visaGroups, statuses, 
       const feedback = form.querySelector('.save-status');
       const values = () => ({ ...Object.fromEntries(new FormData(form)), ...(a.id ? { id: a.id } : {}) });
       const updateSaveLabel = () => {
-        saveButton.textContent = status.value === 'draft' ? tr('Save draft', 'Сохранить черновик') : tr('Save to publications page', 'Сохранить на странице публикаций');
+        saveButton.textContent = status.value === 'draft' ? tr('Save draft', 'Сохранить черновик') : pages ? tr('Save for export', 'Сохранить для выгрузки') : tr('Save to publications page', 'Сохранить на странице публикаций');
       };
       updateSaveLabel();
       form.addEventListener('input', () => { dirty = true; updateSaveLabel(); });
@@ -105,7 +108,8 @@ export function setupStudio({ root, tr, pick, esc, links, visaGroups, statuses, 
           const saved = await api('studio/articles', { method: 'PUT', body: JSON.stringify(record) });
           items = [saved, ...items.filter(existing => existing.id !== saved.id)];
           dirty = false;
-          renderForm(saved, saved.status === 'draft' ? tr('Private draft saved.', 'Личный черновик сохранён.') : tr('Saved to the publications page.', 'Запись сохранена на странице публикаций.'));
+          const savedMessage = pages ? tr('Saved to this browser and ready to export.', 'Сохранено в браузере и готово к выгрузке.') : tr('Saved to the publications page.', 'Запись сохранена на странице публикаций.');
+          renderForm(saved, saved.status === 'draft' ? tr('Private draft saved.', 'Личный черновик сохранён.') : savedMessage);
           container.querySelector('button[type=submit]').focus();
         } catch { setMessage(feedback, saveError, true); }
         finally { saveButton.disabled = false; }
@@ -113,6 +117,17 @@ export function setupStudio({ root, tr, pick, esc, links, visaGroups, statuses, 
     }
 
     panel.querySelector('#add-article').addEventListener('click', () => { if (editing || !dirty) renderForm(); });
+    panel.querySelector('#export-publications')?.addEventListener('click', async () => {
+      const feedback = panel.querySelector('#export-status');
+      if (dirty) {
+        setMessage(feedback, tr('Save your current changes before downloading.', 'Сначала сохраните изменения в форме.'), true);
+        return;
+      }
+      try {
+        await api('studio/export-publications');
+        setMessage(feedback, tr('Exported entries selected for publication.', 'Выгружены записи, выбранные для публикации.'));
+      } catch { setMessage(feedback, tr('The download could not be created.', 'Не удалось подготовить выгрузку.'), true); }
+    });
     window.addEventListener('beforeunload', event => { if (dirty) event.preventDefault(); });
     renderForm(items[0]);
   }
@@ -139,6 +154,7 @@ export function setupStudio({ root, tr, pick, esc, links, visaGroups, statuses, 
     panel.innerHTML = `<div class="studio-head"><div><h2>${tr('UK Global Talent checklist', 'Чеклист UK Global Talent')}</h2><p>${tr('Digital technology endorsement. Track the evidence, rate its strength and record the next action for each item.', 'Маршрут digital technology. Отмечайте готовые доказательства, оценивайте их силу и записывайте следующий шаг.')}</p></div></div>
       <div class="panel progress-box"><div><b id="progress-label"></b><p id="progress-support"></p></div><progress id="track-progress" aria-labelledby="progress-label" max="${count}" value="0"></progress></div>
       <div class="notice"><p>${tr('The checklist helps you prepare the endorsement application. Tech Nation assesses whether the evidence meets the criteria. Guidance checked 27 November 2026.', 'Чеклист помогает подготовить заявку на endorsement. Соответствие доказательств критериям оценивает Tech Nation. Источники сверены 27 ноября 2026 года.')}</p><div class="visa-sources">${[[links.eligibility, tr('GOV.UK eligibility', 'GOV.UK: критерии')], [links.evidence, tr('Evidence and letters', 'Доказательства и письма')], [links.rules, tr('Immigration Rules', 'Иммиграционные правила')], [links.technation, 'Tech Nation'], [links.stage2, tr('Stage 2', 'Подача на визу')]].map(([href, text]) => `<a class="text-link" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(text)}</a>`).join('')}</div></div>
+      ${backup ? `<div class="panel checklist-backup"><p>${tr('Progress is saved in this browser. Export a backup if you want to move it to another browser or device.', 'Прогресс хранится в этом браузере. Скачайте резервную копию, если хотите перенести его в другой браузер или на другое устройство.')}</p><div class="studio-actions"><button class="button dark" type="button" id="export-checklist">${tr('Download backup', 'Скачать резервную копию')}</button><button class="button light" type="button" id="import-checklist">${tr('Restore backup', 'Восстановить из копии')}</button><input type="file" accept=".json,application/json" id="checklist-file" hidden><span id="backup-status" class="save-status" role="status"></span></div></div>` : ''}
       ${visaGroups.map(group => `<section class="visa-group"><h3>${pick(group.name)}</h3>${group.tasks.map(task).join('')}</section>`).join('')}`;
 
     function updateProgress() {
@@ -155,6 +171,28 @@ export function setupStudio({ root, tr, pick, esc, links, visaGroups, statuses, 
     updateProgress();
 
     const dirty = new Set();
+    if (backup) {
+      const file = panel.querySelector('#checklist-file');
+      const status = panel.querySelector('#backup-status');
+      panel.querySelector('#export-checklist').addEventListener('click', () => {
+        if (dirty.size) return setMessage(status, tr('Save your current edits before downloading.', 'Перед выгрузкой сохраните изменения.'), true);
+        backup.download();
+        setMessage(status, tr('Backup created.', 'Резервная копия готова.'));
+      });
+      panel.querySelector('#import-checklist').addEventListener('click', () => {
+        if (dirty.size) return setMessage(status, tr('Save your current edits before restoring.', 'Перед восстановлением сохраните изменения.'), true);
+        file.click();
+      });
+      file.addEventListener('change', async () => {
+        if (!file.files[0]) return;
+        try {
+          await backup.restore(file.files[0]);
+          await checklist(panel);
+          setMessage(panel.querySelector('#backup-status'), tr('Backup restored.', 'Данные восстановлены.'));
+        } catch { setMessage(status, tr('This file could not be restored.', 'Не удалось восстановить данные из этого файла.'), true); }
+        file.value = '';
+      });
+    }
     window.addEventListener('beforeunload', event => { if (dirty.size) event.preventDefault(); });
     for (const form of panel.querySelectorAll('[data-check]')) {
       form.addEventListener('input', () => dirty.add(form.dataset.check));

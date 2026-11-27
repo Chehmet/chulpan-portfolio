@@ -1,13 +1,15 @@
 import { categories, experience, links, projects, publication, visaGroups } from './content.js';
 
 const page = document.body.dataset.page;
+const pages = document.body.dataset.site === 'portfolio';
+const base = document.body.dataset.base || '/';
 const app = document.querySelector('#app');
 const query = new URLSearchParams(location.search);
 const lang = query.get('lang') === 'ru' ? 'ru' : 'en';
 const tr = (en, ru) => lang === 'ru' ? ru : en;
 const pick = value => typeof value === 'object' ? value[lang] : value;
 const name = tr('Chulpan Valiullina', 'Чулпан Валиуллина');
-const url = (path, hash = '') => `${path}${lang === 'ru' ? '?lang=ru' : ''}${hash}`;
+const url = (path, hash = '') => `${base}${path.replace(/^\//, '')}${lang === 'ru' ? '?lang=ru' : ''}${hash}`;
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 const tags = items => `<ul class="tags">${items.map(item => `<li>${esc(item)}</li>`).join('')}</ul>`;
 const external = (href, label, css = '') => `<a class="${css}" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>`;
@@ -33,7 +35,7 @@ function header() {
 }
 
 function footer() {
-  return `<footer class="footer"><div class="wrap footer-inner"><span>© 2026 ${name}</span><div class="footer-links">${external(links.linkedin, 'LinkedIn')}${external(links.github, 'GitHub')}${external(links.scholar, 'Google Scholar')}<a href="${url('/studio/')}">${tr('Owner workspace', 'Кабинет владельца')}</a></div></div></footer>`;
+  return `<footer class="footer"><div class="wrap footer-inner"><span>© 2026 ${name}</span><div class="footer-links">${external(links.linkedin, 'LinkedIn')}${external(links.github, 'GitHub')}${external(links.scholar, 'Google Scholar')}<a href="${url(pages ? '/editor/' : '/studio/')}">${pages ? tr('Publication editor', 'Редактор публикаций') : tr('Owner workspace', 'Кабинет владельца')}</a></div></div></footer>`;
 }
 
 const title = (id, heading, copy = '') => `<div class="section-heading"><h2 id="${id}">${heading}</h2>${copy ? `<p>${copy}</p>` : ''}</div>`;
@@ -62,7 +64,7 @@ function home() {
       <h1 id="hero-title">${tr('Chulpan<br>Valiullina', 'Чулпан<br>Валиуллина')}</h1>
       <p class="hero-intro">${tr('I build AI tools and use data to evaluate how products work. My projects span LLM evaluation, product experiments and NLP research.', 'Разрабатываю AI-инструменты и использую данные, чтобы оценивать работу продуктов. Мои проекты охватывают оценку LLM, продуктовые эксперименты и исследования в NLP.')}</p>
       <div class="actions"><a class="button primary" href="#work">${tr('Explore my work', 'Смотреть проекты')}</a>${external(links.linkedin, 'LinkedIn', 'button outline')}</div></div>
-      <div class="hero-art" aria-hidden="true"><img src="/assets/contours.webp" width="1000" height="1000" alt="" fetchpriority="high"><span class="art-mark mark-top"></span><span class="art-mark mark-bottom"></span></div>
+      <div class="hero-art" aria-hidden="true"><img src="${base}assets/contours.webp" width="1000" height="1000" alt="" fetchpriority="high"><span class="art-mark mark-top"></span><span class="art-mark mark-bottom"></span></div>
     </section></div>
     <div class="credential-band"><div class="wrap credential-inner"><div><strong>${tr('T-Bank', 'Т-Банк')}</strong><span>${tr('Backend engineering', 'Backend-разработка')}</span></div><div><strong>${tr('Innopolis University', 'Университет Иннополис')}</strong><span>${tr('Data & AI', 'Данные и AI')}</span></div><div><strong>Springer · AINA 2026</strong><span>${tr('Published NLP research', 'Публикация по NLP')}</span></div></div></div>
     <section class="wrap section" id="work" aria-labelledby="work-title">
@@ -111,7 +113,10 @@ function publications() {
   return `<main id="main"><section class="page-banner"><div class="wrap"><p class="eyebrow">${name}</p><h1>${tr('Publications', 'Публикации')}</h1><p>${tr('Research on language models and creativity, with room for preprints and working papers.', 'Исследования языковых моделей и креативности. Здесь также могут появляться препринты и рабочие статьи.')}</p>${external(links.scholar, 'Google Scholar', 'button outline')}</div></section><div class="wrap section papers" id="papers">${articleCard(publication)}</div></main>`;
 }
 
-app.innerHTML = header() + (page === 'publications' ? publications() : page === 'studio' ? `<main id="main"><section class="page-banner"><div class="wrap"><p class="eyebrow">${name}</p><h1>${tr('Workspace', 'Рабочий кабинет')}</h1><p>${tr('Publication editor and Global Talent checklist.', 'Редактор публикаций и чеклист Global Talent.')}</p></div></section><div class="wrap section" id="studio" aria-live="polite"><p>${tr('Checking access…', 'Проверяем доступ…')}</p></div></main>` : home()) + footer();
+const workspaceTitle = pages ? tr('Publication editor', 'Редактор публикаций') : tr('Workspace', 'Рабочий кабинет');
+const workspaceSummary = pages ? '' : `<p>${tr('Publication editor and Global Talent checklist.', 'Редактор публикаций и чеклист Global Talent.')}</p>`;
+app.innerHTML = header() + (page === 'publications' ? publications() : page === 'studio' ? `<main id="main"><section class="page-banner"><div class="wrap"><p class="eyebrow">${name}</p><h1>${workspaceTitle}</h1>${workspaceSummary}</div></section><div class="wrap section" id="studio"></div></main>` : home()) + footer();
+if (page === 'studio') document.title = `${workspaceTitle} · ${name}`;
 
 function preserveLanguageAnchors() {
   document.querySelectorAll('[data-lang]').forEach(link => {
@@ -134,6 +139,10 @@ app.addEventListener('click', event => {
 });
 
 async function api(path, options) {
+  if (pages) {
+    const { portfolioApi } = await import('./pages-storage.js');
+    return portfolioApi(base, path, options);
+  }
   const response = await fetch(`/api/${path}`, { ...options, headers: { 'Content-Type': 'application/json' } });
   if (!response.ok) throw new Error(String(response.status));
   return response.json();
@@ -151,5 +160,6 @@ if (page === 'publications') {
 if (page === 'studio') {
   import('./studio.js').then(({ setupStudio }) => setupStudio({
     root: document.querySelector('#studio'), tr, pick, esc, links, visaGroups, statuses, api, articleCard, url,
+    ...(pages ? { pages: 'portfolio' } : {}),
   }));
 }

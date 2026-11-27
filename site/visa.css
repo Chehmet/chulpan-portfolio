@@ -1,0 +1,13 @@
+:root{--forest:#26364d;--night:#132137;--paper:#f2f0e9;--white:#fffefa;--lime:#f0c894;--ink:#1b2b3e;--muted:#46566a;--line:#d5d8da}
+.top{border-color:#4b5970}.top nav a{color:#e1e4ec}.brand-icon{font:800 .83rem var(--mono)}.lang{border-color:#758096}.lang a{color:#e1e4ec}
+.visa-hero{background:radial-gradient(ellipse at 80% 25%,#263a58 5%,#132137 65%);color:var(--paper);border-bottom:6px solid var(--lime)}
+.visa-hero-layout{display:grid;grid-template-columns:1.45fr 1fr;gap:7%;align-items:end;padding-block:65px}
+.visa-hero h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:clamp(4rem,10vw,8.6rem);line-height:.84;letter-spacing:-.064em;margin-top:20px}
+.visa-hero .eyebrow,.page-banner .eyebrow{color:var(--lime)}
+.visa-hero-layout>div>p:not(.eyebrow){color:#e0e5ea;margin-top:25px;max-width:500px;font-size:1.06rem}
+.visa-requirements{border:1px solid #65748a;background:#1829429c;padding:23px;min-width:0}
+.visa-requirements dl{margin-top:14px}.visa-requirements dl div{display:grid;grid-template-columns:54px 1fr;gap:13px;align-items:center;border-top:1px solid #576981;padding-block:11px}.visa-requirements dt{font-family:Georgia,serif;font-weight:700;font-size:2.8rem;line-height:1;color:var(--lime)}.visa-requirements dd{color:#edf0f3}
+.button.primary:hover{background:#fae0bb}.button.outline:hover,.button.dark:hover{background:#344b69}.button.outline{border-color:#8999b0}.button.light:hover{background:#e9edf2}.button.light{border-color:#aab4bf}
+.visa-evidence{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.visa-evidence article{background:var(--white);border:1px solid var(--line);border-left:4px solid #7690ad;padding:22px;min-width:0}.visa-evidence h3{font:400 clamp(1.45rem,2.65vw,2.25rem)/1.12 Georgia,'Times New Roman',serif;margin-top:6px;overflow-wrap:anywhere}.visa-evidence p:not(.eyebrow){margin-top:9px;color:var(--muted)}
+.visa-next{background:#e4e8ef;border-top:1px solid #c7ceda}.visa-official{margin-left:12px}.text-link,summary{color:#24456b}.status-label{background:#e5ecf5;color:#223c60}.progress-box progress{accent-color:#41628d}.page-banner p:not(.eyebrow){color:#dce1ea}.footer{color:#dce1ea}
+@media(max-width:650px){.visa-hero-layout,.visa-evidence{grid-template-columns:1fr}.visa-hero-layout{gap:25px;padding-block:40px}.visa-requirements{padding:16px}.visa-requirements dl div{padding-block:7px}.visa-requirements dt{font-size:2.1rem}}
