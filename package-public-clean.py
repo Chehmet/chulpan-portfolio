@@ -10,6 +10,7 @@ files = {
     '.nojekyll', 'README.md', 'index.html', 'publications-data.json',
     'publications/index.html', 'editor/index.html', 'assets/style.css',
     'assets/app.js', 'assets/content.js', 'assets/contours.webp',
+    'assets/cert-studcamp-itmo.webp', 'assets/cert-studcamp-nsu.webp', 'assets/cert-studcamp-mipt.webp',
     'assets/pages-storage.js', 'assets/publication-editor.js',
 }
 private_terms = re.compile(r'global talent|tech nation|\bvisa\b|visagroups|визов|иммиграц|чеклист|research-desk', re.IGNORECASE)

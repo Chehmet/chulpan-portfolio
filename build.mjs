@@ -1,5 +1,5 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { visaGroups } from './site/content.js';
+import { studcampCertificates, visaGroups } from './site/content.js';
 
 const read = (file, encoding) => readFile(new URL(file, import.meta.url), encoding);
 const write = (file, data) => writeFile(new URL(file, import.meta.url), data);
@@ -9,6 +9,7 @@ const assets = {
   '/assets/content.js': ['content.js', 'text/javascript; charset=utf-8'],
   '/assets/studio.js': ['studio.js', 'text/javascript; charset=utf-8'],
   '/assets/contours.webp': ['contours.webp', 'image/webp', true],
+  ...Object.fromEntries(studcampCertificates.map(({ image }) => [`/assets/${image}`, [image, 'image/webp', true]])),
 };
 
 const [shell, worker, manifest] = await Promise.all([

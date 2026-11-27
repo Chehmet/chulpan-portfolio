@@ -2,7 +2,7 @@ import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { constants } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { categories, experience, links, projects, publication } from './site/content.js';
+import { categories, experience, links, projects, publication, studcampCertificates } from './site/content.js';
 import { buildPages } from './build-pages.mjs';
 
 const project = fileURLToPath(new URL('.', import.meta.url));
@@ -24,7 +24,7 @@ function block(text, startMarker, endMarker) {
 }
 
 for (const dir of ['assets', 'publications', 'editor']) await mkdir(join(target, dir), { recursive: true });
-const copied = ['.nojekyll', 'README.md', 'index.html', 'publications/index.html', 'editor/index.html', 'assets/contours.webp'];
+const copied = ['.nojekyll', 'README.md', 'index.html', 'publications/index.html', 'editor/index.html', 'assets/contours.webp', ...studcampCertificates.map(({ image }) => `assets/${image}`)];
 await Promise.all(copied.map(file => copyFile(join(source, file), join(target, file))));
 try {
   await copyFile(join(source, 'publications-data.json'), join(target, 'publications-data.json'), constants.COPYFILE_EXCL);
@@ -73,6 +73,6 @@ const css = (await read('assets/style.css')).split('\n').filter(line => !line.st
 await write('assets/style.css', css);
 
 const publicLinks = { github: links.github, linkedin: links.linkedin, scholar: links.scholar, chapter: links.chapter };
-const data = { categories, experience, links: publicLinks, projects, publication };
+const data = { categories, experience, links: publicLinks, projects, publication, studcampCertificates };
 await write('assets/content.js', Object.entries(data).map(([key, value]) => `export const ${key} = ${JSON.stringify(value, null, 2)};`).join('\n\n') + '\n');
 console.log(`GitHub Pages: ${target}`);

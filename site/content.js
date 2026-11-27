@@ -1,5 +1,11 @@
 const t = (en, ru) => ({ en, ru });
 
+export const studcampCertificates = [
+  { image: 'cert-studcamp-itmo.webp', school: t('ITMO University', 'Университет ИТМО'), name: t('Data Management', 'Управление данными'), number: '2025-03002-12', verify: 'https://education.yandex.ru/profile/docs?id=82a9311a-f6b0-4c91-8dfd-40894f115078' },
+  { image: 'cert-studcamp-nsu.webp', school: t('Novosibirsk State University', 'Новосибирский государственный университет'), name: t('Natural Language Processing', 'Обработка естественного языка'), number: '2025-03008-11', verify: 'https://education.yandex.ru/profile/docs?id=7e449b78-5d35-40db-8eba-07db5f3b3caa' },
+  { image: 'cert-studcamp-mipt.webp', school: t('Moscow Institute of Physics and Technology', 'Московский физико-технический институт'), name: t('Generative AI & Robots', 'Генеративный ИИ и роботы'), number: '2025-03001-007', verify: 'https://education.yandex.ru/profile/docs?id=57c5a32a-9cd4-474f-b5a5-4eb9ec200122' },
+];
+
 export const links = {
   github: 'https://github.com/Chehmet',
   linkedin: 'https://www.linkedin.com/in/chulpan-valiullina-071aa3300/',

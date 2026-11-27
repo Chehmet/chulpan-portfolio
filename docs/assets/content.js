@@ -304,3 +304,45 @@ export const publication = {
   "url": "https://link.springer.com/chapter/10.1007/978-3-032-23286-1_7",
   "doi": "10.1007/978-3-032-23286-1_7"
 };
+
+export const studcampCertificates = [
+  {
+    "image": "cert-studcamp-itmo.webp",
+    "school": {
+      "en": "ITMO University",
+      "ru": "Университет ИТМО"
+    },
+    "name": {
+      "en": "Data Management",
+      "ru": "Управление данными"
+    },
+    "number": "2025-03002-12",
+    "verify": "https://education.yandex.ru/profile/docs?id=82a9311a-f6b0-4c91-8dfd-40894f115078"
+  },
+  {
+    "image": "cert-studcamp-nsu.webp",
+    "school": {
+      "en": "Novosibirsk State University",
+      "ru": "Новосибирский государственный университет"
+    },
+    "name": {
+      "en": "Natural Language Processing",
+      "ru": "Обработка естественного языка"
+    },
+    "number": "2025-03008-11",
+    "verify": "https://education.yandex.ru/profile/docs?id=7e449b78-5d35-40db-8eba-07db5f3b3caa"
+  },
+  {
+    "image": "cert-studcamp-mipt.webp",
+    "school": {
+      "en": "Moscow Institute of Physics and Technology",
+      "ru": "Московский физико-технический институт"
+    },
+    "name": {
+      "en": "Generative AI & Robots",
+      "ru": "Генеративный ИИ и роботы"
+    },
+    "number": "2025-03001-007",
+    "verify": "https://education.yandex.ru/profile/docs?id=57c5a32a-9cd4-474f-b5a5-4eb9ec200122"
+  }
+];

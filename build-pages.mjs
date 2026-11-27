@@ -1,7 +1,7 @@
 import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { categories, experience, links, projects, publication, visaGroups } from './site/content.js';
+import { categories, experience, links, projects, publication, studcampCertificates, visaGroups } from './site/content.js';
 
 const root = fileURLToPath(new URL('./dist/github-pages/', import.meta.url));
 const source = fileURLToPath(new URL('./site/', import.meta.url));
@@ -25,8 +25,8 @@ ${details}
 
 const variants = [
   {
-    dir: 'portfolio', id: 'portfolio', app: 'app.js', assets: ['style.css', 'app.js', 'studio.js', 'pages-storage.js', 'contours.webp'],
-    data: { categories, experience, links: { github: links.github, linkedin: links.linkedin, scholar: links.scholar, chapter: links.chapter }, projects, publication, visaGroups: [] },
+    dir: 'portfolio', id: 'portfolio', app: 'app.js', assets: ['style.css', 'app.js', 'studio.js', 'pages-storage.js', 'contours.webp', ...studcampCertificates.map(({ image }) => image)],
+    data: { categories, experience, links: { github: links.github, linkedin: links.linkedin, scholar: links.scholar, chapter: links.chapter }, projects, publication, studcampCertificates, visaGroups: [] },
     routes: [
       { path: '', page: 'home', title: 'Chulpan Valiullina — AI Engineering & Data Analytics' },
       { path: 'publications', page: 'publications', title: 'Publications — Chulpan Valiullina' },

@@ -1,4 +1,4 @@
-import { categories, experience, links, projects, publication, visaGroups } from './content.js';
+import { categories, experience, links, projects, studcampCertificates, publication, visaGroups } from './content.js';
 
 const page = document.body.dataset.page;
 const pages = document.body.dataset.site === 'portfolio';
@@ -84,6 +84,14 @@ function home() {
         <article class="education"><p class="eyebrow">${tr('INTENSIVE PROGRAMMES · 2025', 'ИНТЕНСИВЫ · 2025')}</p><h3>${tr('Yandex Studcamps', 'Студкемпы Яндекса')}</h3><ul class="plain studcamps"><li>Data Management <span>${external('https://github.com/Chehmet/StudcampITMO', tr('ITMO project', 'Проект ИТМО'))}</span></li><li>NLP <span>${external('https://github.com/Chehmet/StudcampNGU', tr('NSU project', 'Проект НГУ'))}</span></li><li>Generative AI & Robots</li></ul>${external('https://education.yandex.ru/projects/studcamp', tr('Yandex programme overview', 'Официальная страница Студкемпов'), 'text-link')}</article>
         <article class="education"><p class="eyebrow">${tr('HACKATHONS & CERTIFICATES', 'ХАКАТОНЫ И СЕРТИФИКАТЫ')}</p><h3>${tr('Competition & training', 'Соревнования и обучение')}</h3><ul class="plain"><li><strong>${tr('3rd place', '3-е место')}</strong> · ${tr('Invian × Innopolis University Startup Studio Hackathon', 'хакатон «Инвиан» и Стартап-студии Университета Иннополис')}</li><li>${tr('MTS True Tech Hack · participant certificate, 2026', 'МТС True Tech Hack · сертификат участника, 2026')}</li><li>${tr('InnoGlobalHack and EESTech Challenge · participant certificates, 2024', 'InnoGlobalHack и EESTech Challenge · сертификаты участника, 2024')}</li><li>${tr('IT Purple Hack · participant certificate', 'IT Purple Hack · сертификат участника')}</li><li>${tr('Yandex Lyceum certificate · 2018–2020', 'Сертификат Яндекс Лицея · 2018–2020')}</li></ul></article>
       </div>
+    </section>
+    <section class="wrap certificate-section" id="studcamp-certificates" aria-labelledby="studcamp-title">
+      ${title('studcamp-title', tr('Yandex Studcamp certificates', 'Сертификаты Студкемпов Яндекса'))}
+      <div class="certificate-grid">${studcampCertificates.map(item => {
+        const src = `${base}assets/${item.image}`;
+        const name = pick(item.name);
+        return `<article class="education certificate"><a class="certificate-image" href="${esc(src)}" target="_blank" rel="noopener"><img src="${esc(src)}" alt="${esc(tr('Certificate of participation: ', 'Сертификат участника: ') + name)}" width="989" height="1400" loading="lazy"></a><div class="certificate-caption"><p>${esc(pick(item.school))}</p><h3>${esc(name)}</h3><p>№ ${item.number} · ${tr('72 hours', '72 часа')}</p>${external(item.verify, tr('Verify with Yandex', 'Проверить у Яндекса'), 'text-link')}</div></article>`;
+      }).join('')}</div>
     </section>
     <div class="research-callout"><div class="wrap research-inner"><div><p class="eyebrow">${tr('RESEARCH · SPRINGER', 'ИССЛЕДОВАНИЯ · SPRINGER')}</p><h2>${tr('How do we measure<br>creativity in text?', 'Как измерить<br>креативность текста?')}</h2></div><div><p>${tr('Our AINA 2026 chapter uses eight linguistic markers to compare human and machine-generated writing.', 'В работе для AINA 2026 мы сравнили тексты людей и языковых моделей по восьми лингвистическим маркерам.')}</p><a class="button dark" href="${url('/publications/')}">${tr('Read my publications', 'Смотреть публикации')}</a></div></div></div>
     <section class="wrap section contact"><h2>${tr('Let’s talk', 'Давайте знакомиться')}</h2><p>${tr('For roles in AI engineering, analytics or applied research, reach me on LinkedIn.', 'Если вы ищете специалистку по AI-разработке, аналитике или прикладным исследованиям, напишите мне в LinkedIn.')}</p>${external(links.linkedin, 'LinkedIn', 'button dark')}</section>

@@ -101,6 +101,15 @@ summary:hover,.text-link:hover{text-decoration-color:#7c8c26}
 .education h3{font-size:clamp(1.5rem,2.9vw,2.2rem);margin:6px 0 13px}.education dl>div+div{margin-top:10px}.education dt{font-weight:700}
 .plain{padding-left:1.14em}.plain li+li{margin-top:4px}
 .studcamps span{display:inline-block;margin-left:.32rem;font-size:.89rem;font-weight:700;color:#23452f;text-underline-offset:3px}
+.certificate-section{padding-bottom:clamp(42px,6vw,76px);scroll-margin-top:84px}
+.certificate-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,245px),1fr));gap:12px}
+.certificate.education{padding:0;overflow:hidden}
+.certificate-image{display:block;outline-offset:-5px}
+.certificate-image img{display:block;width:100%;height:auto}
+.certificate-caption{padding:18px}
+.certificate-caption p{font-size:.87rem;color:var(--muted);margin:0}
+.certificate-caption h3{font-size:clamp(1.25rem,2vw,1.65rem);margin:6px 0}
+.certificate-caption .text-link{display:inline-block;margin-top:10px}
 .research-callout{background:#dff270;border-block:1px solid #c4d85f}
 .research-inner{padding-block:52px;display:grid;grid-template-columns:1.45fr 1fr;gap:5%;align-items:end}.research-inner .eyebrow{color:#354e32;margin-bottom:11px}
 .research-inner p:not(.eyebrow){max-width:400px;margin-bottom:15px}
