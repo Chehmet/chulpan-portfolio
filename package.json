@@ -2,5 +2,10 @@
   "name": "chulpan-valiullina-portfolio",
   "private": true,
   "type": "module",
-  "scripts": { "build": "node build.mjs", "check": "node check.mjs", "preview": "node preview.mjs" }
+  "scripts": {
+    "build": "node build.mjs",
+    "build:pages": "node build-public-clean.mjs",
+    "check": "node check.mjs",
+    "preview": "node preview.mjs"
+  }
 }

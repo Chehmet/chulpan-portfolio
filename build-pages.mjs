@@ -1,5 +1,5 @@
 import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { categories, experience, links, projects, publication, visaGroups } from './site/content.js';
 
@@ -12,8 +12,8 @@ const readme = (name, details) => `# ${name}
 ## Публикация через GitHub Pages
 
 1. Создайте отдельный репозиторий на GitHub для этого сайта.
-2. Распакуйте ZIP. Загрузите файлы из корня архива в корень репозитория, включая **index.html** и папку **assets**. Загрузите также скрытый файл **.nojekyll**, если ваш файловый менеджер его показывает.
-3. Откройте **Settings → Pages**. В **Build and deployment** выберите **Deploy from a branch**, затем ветку **main**, папку **/(root)** и **Save**.
+2. Создайте папку **docs** и распакуйте в неё содержимое ZIP. Сохраните **index.html**, **.nojekyll** и папки **assets**, **editor** и **publications** рядом друг с другом, если они присутствуют в архиве.
+3. Откройте **Settings → Pages**. В **Build and deployment** выберите **Deploy from a branch**, ветку **main**, папку **/docs** и **Save**. Если вы разместили файлы в корне, выберите **/(root)**.
 4. После сборки скопируйте ссылку из **Settings → Pages**. На сайте переключатель **RU / EN** расположен вверху.
 
 Сайт работает по адресу вида **https://USERNAME.github.io/REPOSITORY/** и не требует установки зависимостей или сборки. Открывайте его по HTTP(S), чтобы браузер мог загружать модули и данные.
@@ -37,7 +37,7 @@ const variants = [
 
 Откройте в подвале сайта **Редактор публикаций**. Добавьте название, аннотацию, ссылку на PDF или текст. Можно заполнить один язык или оба. Нажмите **Предпросмотр**, чтобы проверить карточку.
 
-Черновики и правки хранятся в текущем браузере. Чтобы поделиться материалом, выберите «Препринт», «Рабочая статья» или «Опубликовано», сохраните запись и нажмите **Скачать publications-data.json**. Замените одноимённый файл в корне репозитория скачанным файлом. После обновления GitHub Pages запись будет видна всем посетителям. Для снятия записи выберите «Личный черновик» и повторите выгрузку и замену файла.
+Черновики и правки хранятся в текущем браузере. Чтобы поделиться материалом, выберите «Препринт», «Рабочая статья» или «Опубликовано», сохраните запись и нажмите **Скачать publications-data.json**. Замените этот файл в папке, выбранной источником GitHub Pages, например **docs/publications-data.json**. После обновления GitHub Pages запись будет видна всем посетителям. Для снятия записи выберите «Личный черновик» и повторите выгрузку и замену файла.
 
 В публичную выгрузку попадают только записи со статусом для публикации. PDF хранится по внешней ссылке. Работа Springer уже добавлена в сайт. 
 
@@ -61,7 +61,7 @@ const variants = [
   },
 ];
 
-for (const variant of variants) {
+async function buildVariant(variant) {
   const folder = join(root, variant.dir);
   const assets = join(folder, 'assets');
   await mkdir(assets, { recursive: true });
@@ -86,4 +86,13 @@ for (const variant of variants) {
   }
 }
 
-console.log(root);
+export async function buildPages(only) {
+  for (const variant of variants.filter(variant => !only || variant.id === only)) {
+    await buildVariant(variant);
+  }
+  return root;
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  console.log(await buildPages());
+}

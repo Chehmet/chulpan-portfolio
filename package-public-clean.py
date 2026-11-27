@@ -4,7 +4,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 
 project = Path(__file__).resolve().parent
-source = project / 'dist' / 'public-clean'
+source = project / 'docs'
 archive = project.parent / 'chulpan-portfolio-public-clean.zip'
 files = {
     '.nojekyll', 'README.md', 'index.html', 'publications-data.json',
@@ -13,6 +13,10 @@ files = {
     'assets/pages-storage.js', 'assets/publication-editor.js',
 }
 private_terms = re.compile(r'global talent|tech nation|\bvisa\b|visagroups|визов|иммиграц|чеклист|research-desk', re.IGNORECASE)
+
+actual = {path.relative_to(source).as_posix() for path in source.rglob('*') if path.is_file()}
+if actual != files:
+    raise ValueError(f'Unexpected docs files: {sorted(actual - files)}. Missing: {sorted(files - actual)}')
 
 for name in files:
     if not (source / name).is_file():
